@@ -125,6 +125,7 @@ gen/
 # Local configuration file (sdk path, etc)
 local.properties
 .properties
+application.properties
 
 # Log file
 *.log
