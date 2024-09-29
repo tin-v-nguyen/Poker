@@ -28,6 +28,7 @@ public class AuthController {
 
         User savedUser = userRepository.save(newUser);
 
+        // TODO: IMPORTANT, change so that password isnt returned in the response
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 }

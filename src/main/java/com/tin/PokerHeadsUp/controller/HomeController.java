@@ -10,4 +10,9 @@ public class HomeController {
     public String home() {
         return "Welcome to Pokercs";
     }
+
+    @GetMapping("api")
+    public String testSecure() {
+        return "Welcome to testSecure";
+    }
 }
