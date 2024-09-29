@@ -22,8 +22,6 @@ public class AppConfig {
         return http.build();
     }
 
-
-
     // can use this to specify which ip/url are allowed to make backend requests
     private CorsConfigurationSource corsConfigurationSource() {
         return null;
