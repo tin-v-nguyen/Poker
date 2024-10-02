@@ -17,13 +17,15 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(username);
+    public UserDetails loadUserByUsername(String username) {
+        User user = null;
+        try {
+            user = userService.findUserByEmail(username);
+        } catch (Exception e) {
+            throw new UsernameNotFoundException(e.getMessage());
         }
 
         List<GrantedAuthority> authorityList = new ArrayList<>();
