@@ -13,10 +13,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -32,8 +31,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody User user) throws Exception {
 
-        User userExists = userRepository.findByEmail(user.getEmail());
-        if(userExists != null) {
+        Optional<User> userExists = userRepository.findByEmail(user.getEmail());
+        if(!userExists.isEmpty()) {
             throw new Exception("Email is already associated with an account, please log in");
         }
 
@@ -68,10 +67,30 @@ public class AuthController {
         String password = user.getPassword();
 
         Authentication auth = authenticate(email, password);
-
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         String jwt = JwtProvider.generateToken(auth);
+
+        Optional<User> foundUser = userRepository.findByEmail(email);
+
+        if (foundUser.get().getTwoFactorAuth().isEnabled()) {
+            AuthenticationResponse res = new AuthenticationResponse();
+            res.setMessage("Two factor auth is enabled");
+            res.setTwoFactorAuthEnabled((true));
+            String otp = OtpUtils.generateOTP();
+
+            TwoFactorOTP oldTwoFactorOTP = twoFactorOTPService.findByUser(foundUser.get().getId());
+
+            if (oldTwoFactorOTP != null) {
+                twoFactorOTPService.deleteTwoFactorOTP(oldTwoFactorOTP);
+            }
+
+            TwoFactorOTP newTwoFactorOTP = twoFactorOTPService.createTwoFactorOTP(foundUser.get(), otp, jwt);
+            emailService.sendOtpEmail(email, otp);
+
+            res.setSession(newTwoFactorOTP.getId());
+            return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+        }
 
         AuthenticationResponse res = new AuthenticationResponse();
         res.setJwt(jwt);
