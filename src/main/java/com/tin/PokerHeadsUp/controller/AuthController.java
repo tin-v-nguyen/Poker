@@ -1,10 +1,15 @@
 package com.tin.PokerHeadsUp.controller;
 
 import com.tin.PokerHeadsUp.config.JwtProvider;
+import com.tin.PokerHeadsUp.model.TwoFactorOTP;
 import com.tin.PokerHeadsUp.model.User;
 import com.tin.PokerHeadsUp.repository.UserRepository;
 import com.tin.PokerHeadsUp.response.AuthenticationResponse;
 import com.tin.PokerHeadsUp.service.CustomUserDetailsService;
+import com.tin.PokerHeadsUp.service.EmailService;
+import com.tin.PokerHeadsUp.service.ITwoFactorOTPService;
+import com.tin.PokerHeadsUp.service.TwoFactorOTPService;
+import com.tin.PokerHeadsUp.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +32,12 @@ public class AuthController {
     private UserRepository userRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private TwoFactorOTPService twoFactorOTPService;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody User user) throws Exception {

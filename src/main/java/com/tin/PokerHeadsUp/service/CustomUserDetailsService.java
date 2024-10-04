@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         try {
             user = userService.findUserByEmail(username);
         } catch (Exception e) {
-            throw new UsernameNotFoundException(e.getMessage());
+            throw new UsernameNotFoundException("Username or password is incorrect");
         }
 
         List<GrantedAuthority> authorityList = new ArrayList<>();
