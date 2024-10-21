@@ -27,4 +27,5 @@ public class User {
 
     // default role
     private USER_ROLE role = USER_ROLE.ROLE_PLAYER;
+    private double balance;
 }
