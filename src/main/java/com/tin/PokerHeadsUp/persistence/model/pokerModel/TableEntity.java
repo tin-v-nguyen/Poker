@@ -1,5 +1,6 @@
 package com.tin.PokerHeadsUp.persistence.model.pokerModel;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,6 +14,7 @@ public class TableEntity {
     private Hand currentHand;
 
     // PlayerEntity object contains userId and stack size
+    @ElementCollection
     private List<PlayerEntity> playerList;
     private int buttonPosition;
 
