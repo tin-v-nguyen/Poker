@@ -1,5 +1,6 @@
 package com.tin.PokerHeadsUp.persistence.model.pokerModel;
 
+import com.tin.PokerHeadsUp.memory.model.Player;
 import jakarta.persistence.*;
 import lombok.Data;
 

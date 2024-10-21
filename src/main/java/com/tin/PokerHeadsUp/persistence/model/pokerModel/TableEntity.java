@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 
 import java.util.List;
 
-public class Table {
+public class TableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long tableId;
