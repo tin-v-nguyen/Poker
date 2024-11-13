@@ -32,9 +32,6 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
@@ -75,21 +72,21 @@ public class AuthController {
 
         String jwt = JwtProvider.generateToken(auth);
 
-        Optional<User> foundUser = userRepository.findByEmail(email);
+        User foundUser = userService.findUserByEmail(email);
 
-        if (foundUser.get().getTwoFactorAuth().isEnabled()) {
+        if (foundUser.getTwoFactorAuth().isEnabled()) {
             AuthenticationResponse res = new AuthenticationResponse();
             res.setMessage("Two factor auth is enabled");
             res.setTwoFactorAuthEnabled((true));
             String otp = OtpUtils.generateOTP();
 
-            TwoFactorOTP oldTwoFactorOTP = twoFactorOTPService.findByUser(foundUser.get().getId());
+            TwoFactorOTP oldTwoFactorOTP = twoFactorOTPService.findByUser(foundUser.getId());
 
             if (oldTwoFactorOTP != null) {
                 twoFactorOTPService.deleteTwoFactorOTP(oldTwoFactorOTP);
             }
 
-            TwoFactorOTP newTwoFactorOTP = twoFactorOTPService.createTwoFactorOTP(foundUser.get(), otp, jwt);
+            TwoFactorOTP newTwoFactorOTP = twoFactorOTPService.createTwoFactorOTP(foundUser, otp, jwt);
             emailService.sendOtpEmail(email, otp);
 
             res.setSession(newTwoFactorOTP.getId());

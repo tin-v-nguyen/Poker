@@ -20,7 +20,7 @@ public class UserService implements IUserService {
     @Override
     public User register(User user) throws Exception {
         Optional<User> userExists = userRepository.findByEmail(user.getEmail());
-        if(!userExists.isEmpty()) {
+        if(userExists.isPresent()) {
             throw new Exception("Email is already associated with an account, please log in");
         }
         User newUser = new User();
@@ -41,7 +41,6 @@ public class UserService implements IUserService {
     @Override
     public User findUserByEmail(String email) throws Exception {
         Optional<User> user = userRepository.findByEmail(email);
-
         if (user.isEmpty()) {
             throw new Exception("User not found");
         }
