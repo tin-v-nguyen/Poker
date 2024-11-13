@@ -16,7 +16,6 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
-
     @Override
     public User register(User user) throws Exception {
         Optional<User> userExists = userRepository.findByEmail(user.getEmail());
