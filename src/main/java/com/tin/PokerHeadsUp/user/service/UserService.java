@@ -16,6 +16,22 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Override
+    public User register(User user) throws Exception {
+        Optional<User> userExists = userRepository.findByEmail(user.getEmail());
+        if(!userExists.isEmpty()) {
+            throw new Exception("Email is already associated with an account, please log in");
+        }
+        User newUser = new User();
+        newUser.setEmail(user.getEmail());
+        // Need to Encrypt password
+        newUser.setPassword(user.getPassword());
+        newUser.setFullName(user.getFullName());
+        User savedUser = userRepository.save(newUser);
+        return savedUser;
+    }
+
     @Override
     public User findUserByJwt(String jwt) throws Exception {
         String email = JwtProvider.getEmailFromToken(jwt);

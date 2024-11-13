@@ -4,10 +4,11 @@ import com.tin.PokerHeadsUp.user.config.JwtProvider;
 import com.tin.PokerHeadsUp.user.model.TwoFactorOTP;
 import com.tin.PokerHeadsUp.user.model.User;
 import com.tin.PokerHeadsUp.user.repository.UserRepository;
-import com.tin.PokerHeadsUp.user.utils.response.AuthenticationResponse;
-import com.tin.PokerHeadsUp.user.utils.service.CustomUserDetailsService;
-import com.tin.PokerHeadsUp.user.utils.service.EmailService;
-import com.tin.PokerHeadsUp.user.utils.service.TwoFactorOTPService;
+import com.tin.PokerHeadsUp.user.response.AuthenticationResponse;
+import com.tin.PokerHeadsUp.user.service.CustomUserDetailsService;
+import com.tin.PokerHeadsUp.user.service.EmailService;
+import com.tin.PokerHeadsUp.user.service.TwoFactorOTPService;
+import com.tin.PokerHeadsUp.user.service.UserService;
 import com.tin.PokerHeadsUp.user.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,11 @@ public class AuthController {
     // UserRepository is how the application interacts with the DB with functions inherited from the JpaRepository
     // Autowired injects the singleton instance of UserRepository for us to use to interact with the db
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
@@ -40,22 +45,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody User user) throws Exception {
-
-        Optional<User> userExists = userRepository.findByEmail(user.getEmail());
-        if(!userExists.isEmpty()) {
-            throw new Exception("Email is already associated with an account, please log in");
-        }
-
-        User newUser = new User();
-        newUser.setEmail(user.getEmail());
-        newUser.setPassword(user.getPassword());
-        newUser.setFullName(user.getFullName());
-
-        User savedUser = userRepository.save(newUser);
+        User savedUser = userService.register(user);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(
-                user.getEmail(),
-                user.getPassword()
+                savedUser.getEmail(),
+                savedUser.getPassword()
         );
 
         SecurityContextHolder.getContext().setAuthentication(auth);
